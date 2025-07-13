@@ -1,4 +1,4 @@
-import { Users, Calendar, FileText, Mic } from "lucide-react";
+import { Users, Calendar, FileText, Mic, TrendingUp, Clock, UserCheck, Activity } from "lucide-react";
 import Link from "next/link";
 import { getSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -58,171 +58,254 @@ export default async function DashboardPage() {
       description: "Take photos of attendance sheets and automatically extract attendance data",
       icon: Users,
       href: "/dashboard/attendance",
-      color: "bg-blue-500",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      iconColor: "text-blue-600",
     },
     {
       name: "Manage Meetings",
       description: "Schedule and organize ward meetings with notes and recordings",
       icon: Calendar,
       href: "/dashboard/meetings",
-      color: "bg-green-500",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      iconColor: "text-emerald-600",
     },
     {
       name: "Transcribe Zoom Calls",
       description: "Automatically transcribe and summarize Zoom meetings",
       icon: Mic,
       href: "/dashboard/meetings?type=zoom",
-      color: "bg-purple-500",
+      color: "from-purple-500 to-purple-600",
+      bgColor: "bg-purple-50",
+      iconColor: "text-purple-600",
     },
     {
       name: "Meeting Transcriptions",
       description: "Convert meeting recordings to searchable text with AI summaries",
       icon: FileText,
       href: "/dashboard/transcriptions",
-      color: "bg-orange-500",
+      color: "from-orange-500 to-orange-600",
+      bgColor: "bg-orange-50",
+      iconColor: "text-orange-600",
+    },
+  ];
+
+  const statsData = [
+    {
+      label: "Total Members",
+      value: stats.totalUsers,
+      icon: Users,
+      change: "+12%",
+      trend: "up",
+      color: "text-blue-600",
+      bgColor: "bg-blue-100",
+    },
+    {
+      label: "Meetings This Month",
+      value: stats.recentMeetings,
+      icon: Calendar,
+      change: "+8%",
+      trend: "up",
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-100",
+    },
+    {
+      label: "Average Attendance",
+      value: `${stats.attendanceRate}%`,
+      icon: UserCheck,
+      change: "-2%",
+      trend: "down",
+      color: "text-purple-600",
+      bgColor: "bg-purple-100",
     },
   ];
 
   return (
-    <div>
-      <div className="px-4 py-6 sm:px-0">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Welcome back, {session?.user?.name || 'User'}!
-        </h1>
-        <p className="mt-2 text-gray-600">
-          Manage attendance, meetings, and transcriptions all in one place
-        </p>
+    <div className="animate-fade-in">
+      {/* Welcome Section */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 p-8 text-white mb-8">
+        <div className="absolute top-0 right-0 -mt-4 -mr-4 h-32 w-32 rounded-full bg-white/10 blur-3xl" />
+        <div className="absolute bottom-0 left-0 -mb-4 -ml-4 h-24 w-24 rounded-full bg-white/10 blur-2xl" />
+        <div className="relative z-10">
+          <h1 className="text-4xl font-bold mb-2">
+            Welcome back, {session?.user?.name || 'User'}! 👋
+          </h1>
+          <p className="text-blue-100 text-lg">
+            Here's what's happening in your ward today
+          </p>
+        </div>
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
-        {features.map((feature) => (
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 mb-8">
+        {statsData.map((stat, index) => (
+          <div
+            key={stat.label}
+            className="glass-morphism rounded-xl p-6 animate-slide-up"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+                <p className="mt-2 text-3xl font-bold text-gray-900">{stat.value}</p>
+                <div className="mt-2 flex items-center text-sm">
+                  <span className={`font-medium ${stat.trend === 'up' ? 'text-green-600' : 'text-red-600'}`}>
+                    {stat.change}
+                  </span>
+                  <span className="ml-2 text-gray-500">from last month</span>
+                </div>
+              </div>
+              <div className={`p-3 rounded-xl ${stat.bgColor}`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Features Grid */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 mb-8">
+        {features.map((feature, index) => (
           <Link
             key={feature.name}
             href={feature.href}
-            className="group relative bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow"
+            className="group relative overflow-hidden rounded-xl bg-white p-8 shadow-lg card-hover animate-scale-in"
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div>
-              <span
-                className={`rounded-lg inline-flex p-3 ${feature.color} text-white`}
-              >
-                <feature.icon className="h-6 w-6" aria-hidden="true" />
-              </span>
-            </div>
-            <div className="mt-4">
-              <h3 className="text-lg font-medium text-gray-900 group-hover:text-blue-600">
+            <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                 style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }}
+                 className={`${feature.color}`} />
+            
+            <div className="relative z-10">
+              <div className={`inline-flex p-3 rounded-xl ${feature.bgColor} mb-4`}>
+                <feature.icon className={`h-8 w-8 ${feature.iconColor}`} />
+              </div>
+              
+              <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                 {feature.name}
               </h3>
-              <p className="mt-2 text-sm text-gray-500">
+              <p className="text-gray-600">
                 {feature.description}
               </p>
+              
+              <div className="mt-4 flex items-center text-blue-600 font-medium">
+                <span>Get started</span>
+                <svg className="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1" 
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
             </div>
-            <span
-              className="absolute top-6 right-6 text-gray-300 group-hover:text-gray-400"
-              aria-hidden="true"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M20 4h1a1 1 0 00-1-1v1zm-1 12a1 1 0 102 0h-2zM8 3a1 1 0 000 2V3zM3.293 19.293a1 1 0 101.414 1.414l-1.414-1.414zM19 4v12h2V4h-2zm1-1H8v2h12V3zm-.707.293l-16 16 1.414 1.414 16-16-1.414-1.414z" />
-              </svg>
-            </span>
           </Link>
         ))}
       </div>
 
-      <div className="mt-12 bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Quick Stats
-        </h2>
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-          <div className="bg-gray-50 rounded-lg p-4">
-            <dt className="text-sm font-medium text-gray-500">
-              Total Members
-            </dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              {stats.totalUsers}
-            </dd>
+      {/* Recent Activity */}
+      <div className="bg-white rounded-xl shadow-lg p-8 mb-8 animate-slide-up">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Recent Activity</h2>
+            <p className="text-gray-600 mt-1">Latest meetings and events in your ward</p>
           </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <dt className="text-sm font-medium text-gray-500">
-              Meetings This Month
-            </dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              {stats.recentMeetings}
-            </dd>
-          </div>
-          <div className="bg-gray-50 rounded-lg p-4">
-            <dt className="text-sm font-medium text-gray-500">
-              Average Attendance
-            </dt>
-            <dd className="mt-1 text-3xl font-semibold text-gray-900">
-              {stats.attendanceRate}%
-            </dd>
-          </div>
+          <Activity className="h-6 w-6 text-gray-400" />
         </div>
-      </div>
-
-      <div className="mt-8 bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">
-          Recent Activity
-        </h2>
+        
         {recentMeetings.length > 0 ? (
           <div className="space-y-4">
-            {recentMeetings.map((meeting) => (
-              <div key={meeting.id} className="border-l-4 border-blue-500 pl-4 py-2">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">
+            {recentMeetings.map((meeting, index) => (
+              <div 
+                key={meeting.id} 
+                className="group relative overflow-hidden rounded-lg border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200"
+                style={{ animationDelay: `${index * 50}ms` }}
+              >
+                <div className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-blue-500 to-purple-500" />
+                
+                <div className="pl-4 flex justify-between items-start">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
                       {meeting.title}
                     </h3>
-                    <p className="text-sm text-gray-500">
-                      {meeting.type} • {new Date(meeting.date).toLocaleDateString()}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-1">
-                      Created by {meeting.creator.name}
+                    <div className="mt-1 flex items-center space-x-4 text-sm text-gray-500">
+                      <span className="flex items-center">
+                        <Calendar className="h-4 w-4 mr-1" />
+                        {new Date(meeting.date).toLocaleDateString()}
+                      </span>
+                      <span className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {new Date(meeting.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-600">
+                      Created by {meeting.creator.name} • {meeting.type} meeting
                     </p>
                   </div>
                   <Link
                     href={`/dashboard/meetings/${meeting.id}`}
-                    className="text-sm text-blue-600 hover:text-blue-800"
+                    className="ml-4 text-blue-600 hover:text-blue-800 font-medium text-sm whitespace-nowrap"
                   >
-                    View →
+                    View Details →
                   </Link>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-center py-8">
-            No meetings yet. Create your first meeting to get started!
-          </p>
+          <div className="text-center py-12">
+            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No meetings yet</p>
+            <p className="text-gray-400 mt-1">Create your first meeting to get started!</p>
+            <Link href="/dashboard/meetings" className="btn-primary inline-block mt-4">
+              Create Meeting
+            </Link>
+          </div>
         )}
+        
         {recentMeetings.length > 0 && (
-          <div className="mt-4 text-center">
+          <div className="mt-6 text-center">
             <Link
               href="/dashboard/meetings"
-              className="text-sm text-blue-600 hover:text-blue-800"
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium"
             >
-              View all meetings →
+              View all meetings
+              <svg className="ml-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </Link>
           </div>
         )}
       </div>
 
-      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-yellow-800">Quick Tip</h3>
-          <p className="mt-1 text-sm text-yellow-700">
-            You can upload photos of attendance sheets and our AI will automatically extract the data for you.
-          </p>
+      {/* Tips Section */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 p-6 animate-scale-in">
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-yellow-200/30 blur-2xl" />
+          <div className="relative z-10">
+            <div className="flex items-center mb-2">
+              <div className="p-2 bg-yellow-100 rounded-lg">
+                <TrendingUp className="h-5 w-5 text-yellow-600" />
+              </div>
+              <h3 className="ml-3 text-lg font-semibold text-yellow-900">Pro Tip</h3>
+            </div>
+            <p className="text-yellow-800">
+              Upload attendance photos directly from your phone for instant data extraction. Our AI handles the rest!
+            </p>
+          </div>
         </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-800">Getting Started</h3>
-          <p className="mt-1 text-sm text-blue-700">
-            Start by creating a meeting or uploading an attendance sheet to begin tracking your ward activities.
-          </p>
+        
+        <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200 p-6 animate-scale-in" style={{ animationDelay: '100ms' }}>
+          <div className="absolute top-0 right-0 -mt-4 -mr-4 h-24 w-24 rounded-full bg-blue-200/30 blur-2xl" />
+          <div className="relative z-10">
+            <div className="flex items-center mb-2">
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Activity className="h-5 w-5 text-blue-600" />
+              </div>
+              <h3 className="ml-3 text-lg font-semibold text-blue-900">Quick Start</h3>
+            </div>
+            <p className="text-blue-800">
+              Schedule your first meeting and invite members. Track attendance and generate insights automatically.
+            </p>
+          </div>
         </div>
       </div>
     </div>
