@@ -214,7 +214,7 @@ export default async function DashboardPage() {
         
         {recentMeetings.length > 0 ? (
           <div className="space-y-4">
-            {recentMeetings.map((meeting, index) => (
+            {recentMeetings.map((meeting: any, index: number) => (
               <div 
                 key={meeting.id} 
                 className="group relative overflow-hidden rounded-lg border border-gray-200 p-4 hover:border-blue-300 hover:shadow-md transition-all duration-200"
