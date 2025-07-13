@@ -173,9 +173,10 @@ export default async function DashboardPage() {
             className="group relative overflow-hidden rounded-xl bg-white p-8 shadow-lg card-hover animate-scale-in"
             style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div className="absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300"
-                 style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }}
-                 className={`${feature.color}`} />
+            <div
+              className={`absolute inset-0 bg-gradient-to-r opacity-0 group-hover:opacity-10 transition-opacity duration-300 ${feature.color}`}
+              style={{ backgroundImage: `linear-gradient(to right, var(--tw-gradient-stops))` }}
+            />
             
             <div className="relative z-10">
               <div className={`inline-flex p-3 rounded-xl ${feature.bgColor} mb-4`}>
