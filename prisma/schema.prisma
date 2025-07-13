@@ -1,0 +1,94 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  password      String
+  role          Role          @default(MEMBER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  attendances   Attendance[]
+  meetings      Meeting[]
+  transcriptions Transcription[]
+}
+
+model Attendance {
+  id            String    @id @default(cuid())
+  date          DateTime
+  userId        String
+  present       Boolean
+  imageUrl      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  user          User      @relation(fields: [userId], references: [id])
+  
+  @@index([userId])
+  @@index([date])
+}
+
+model Meeting {
+  id            String        @id @default(cuid())
+  title         String
+  date          DateTime
+  type          MeetingType
+  recordingUrl  String?
+  notes         String?
+  createdBy     String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  creator       User          @relation(fields: [createdBy], references: [id])
+  transcriptions Transcription[]
+  
+  @@index([createdBy])
+  @@index([date])
+}
+
+model Transcription {
+  id            String    @id @default(cuid())
+  meetingId     String
+  content       String    @db.Text
+  summary       String?   @db.Text
+  status        TranscriptionStatus @default(PENDING)
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  meeting       Meeting   @relation(fields: [meetingId], references: [id])
+  creator       User      @relation(fields: [createdBy], references: [id])
+  
+  @@index([meetingId])
+  @@index([createdBy])
+}
+
+enum Role {
+  ADMIN
+  LEADER
+  MEMBER
+}
+
+enum MeetingType {
+  ZOOM
+  IN_PERSON
+  HYBRID
+}
+
+enum TranscriptionStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+} 
